@@ -1,29 +1,22 @@
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// MySQL connection setup
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
   host: process.env.host,
   user: process.env.user,
   password: process.env.password,
   database: process.env.database,
-  port: process.env.porter
+  port: process.env.porter,
+  waitForConnections: true,
+  connectionLimit: 30, // Adjust based on load and DB capacity
+  queueLimit: 0,
 });
 
-// Helper function to run queries with promise
-const query = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    connection.query(sql, params, (err, results) => {
-      if (err) {
-        console.error('MySQL Error:', err);
-        reject(err);
-      }
-      resolve(results || []);  // Return an empty array if no results
-    });
-  });
+const query = async (sql, params = []) => {
+  const [results] = await pool.execute(sql, params);
+  return results;
 };
 
-
-export { connection, query };
+export { pool, query };

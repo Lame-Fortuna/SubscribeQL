@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken"
 
-// Middleware to verify JWT
-
 const JWT_SECRET = 'lmao'
 
 export const verifyToken = (req, res, next) => {
